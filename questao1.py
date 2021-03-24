@@ -1,8 +1,7 @@
 import sys
 import argparse
-import cv2
 from math import sqrt
-from dwt import single_dwt_decomposition, single_dwt_reconstruction, dwt1D, idwt1D
+from dwt import dwt1D, idwt1D
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='Processa um sinal 1D com a DWT')
