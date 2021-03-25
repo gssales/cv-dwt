@@ -131,7 +131,8 @@ retorna
 def partial_idwt2D(low, high, direction, f, g):
   A = []
   if direction == 'columns':
-    np.transpose(matrix)
+    np.transpose(low)
+    np.transpose(high)
   for i in range(len(low)) :
     a = single_idwt1D(low[i], high[i], f, g)
     A.append(a)
@@ -147,7 +148,7 @@ função DWT 2D de reconstrução completa
 retorna 
   - Matrix reconstruída
 """
-def complete_dwt2D(filtered_matrices, f, g):
+def complete_idwt2D(filtered_matrices, f, g):
   A = []
   lowlow, lowhigh, highlow, highhigh = filtered_matrices
 
