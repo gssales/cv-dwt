@@ -3,7 +3,7 @@ import argparse
 from math import sqrt
 import numpy as np
 import cv2
-from dwt import complete_dwt2D, complete_idwt2D
+from dwt import complete_dwt2D, complete_idwt2D, dwt2D, idwt2D
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='Processa um sinal 1D com a DWT')
@@ -30,11 +30,22 @@ if __name__ == '__main__':
   # cv2.waitKey()
   # cv2.destroyAllWindows()
 
-  a = [ -2, 1, 3, 2, -3, 4]
-  img = [a,a,a,a,a,a]
-  lowl, lowh, highl, highh = complete_dwt2D(img, haar_c, haar_d)
-  print(lowl, lowh, highl, highh)
+  img = [
+    [ -2, 1, 3, 2, -3, 4],
+    [ -2, 1, 3, 2, -3, 4],
+    [ -2, 1, 3, 2, -3, 4],
+    [ -2, 1, 3, 2, -3, 4],
+    [ -2, 1, 3, 2, -3, 4],
+    [ -2, 1, 3, 2, -3, 4]
+  ]
+  # lowl, lowh, highl, highh = complete_dwt2D(img, haar_c, haar_d)
+  # print(lowl, lowh, highl, highh)
 
-  I = complete_idwt2D((lowl, lowh, highl, highh), haar_f, haar_g)
-  print(I)
+  # I = complete_idwt2D((lowl, lowh, highl, highh), haar_f, haar_g)
+  # print(I)
+  filtered, details = dwt2D(img, J, haar_c, haar_d)
+  print(filtered)
+
+  recons = idwt2D(filtered, details, haar_f, haar_g)
+  print(recons)
 

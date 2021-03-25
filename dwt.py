@@ -72,7 +72,6 @@ returna
   - Sinal Original
 """
 def idwt1D(signal, details, f, g):
-  Ds = []
   A = signal
   while len(details) > 0:
     d = details.pop()
@@ -107,7 +106,7 @@ função DWT 2D de decomposição completa
   - filtro de decomposição passa-baixa
   - filtro de decomposição passa-alta
 retorna 
-  - filtrados [LL, LH, HL, HH]
+  - filtrados (LL, LH, HL, HH)
 """
 def complete_dwt2D(matrix, c, d):
   lowlow, lowhigh, highlow, highhigh = [], [], [], []
@@ -156,4 +155,39 @@ def complete_idwt2D(filtered_matrices, f, g):
   low = partial_idwt2D(lowlow, lowhigh, 'lines', f, g)
   A = partial_idwt2D(low, high, 'columns', f, g)
 
+  return A
+
+"""
+função DWT 2D de decomposição em J níveis
+  - Matriz 2D
+  - J níveis de decomposição
+  - filtro de decomposição passa-baixa
+  - filtro de decomposição passa-alta
+returna 
+  - Lista de Decomposições (LL, LH, HL, HH)[]
+"""
+def dwt2D(matrix, j, c, d):
+  D = []
+  A = matrix
+  while j > 0:
+    filtered = complete_dwt2D(A, c, d)
+    A = filtered.pop(0)
+    D.append(filtered)
+    j -= 1
+  return (A, D)
+
+"""
+função DWT 2D de reconstrução em J níveis
+  - Lista tupla de filtrados (LL, LH, HL, HH)[]
+  - J níveis de reconstrução
+  - filtro de reconstrução passa-baixa
+  - filtro de reconstrução passa-alta
+returna 
+  - Matriz Reconstruída
+"""
+def idwt2D(matrix, details, f, g):
+  A = matrix
+  while len(details) > 0:
+    F = (A, *details.pop())
+    A = complete_idwt2D(F, f, g)
   return A
