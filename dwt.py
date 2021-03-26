@@ -12,6 +12,8 @@ returna
 def single_dwt1D(signal, c, d):
   y0, y1 = [], []
   S = [0] + signal + [0]
+  # gt_antes = max(signal)
+  # lw_antes = min(signal)
   for i in range(len(S)-1): # convolução
     y0.append( S[i] * c[0] + S[i+1] * c[1] )
     y1.append( S[i] * d[0] + S[i+1] * d[1] )
@@ -19,6 +21,13 @@ def single_dwt1D(signal, c, d):
   for i in range(1,len(S)-1,2): # down-sampling
     A.append( y0[i] )
     D.append( y1[i] )
+  # print(lower, greater)
+  # print(A[0])
+  # print(A[0])
+  # gt_depois = max(A)
+  # lw_depois = min(A)
+  # A = list(map(lambda x: (x - lw_depois) * (gt_antes - lw_antes) / (gt_depois - lw_depois) + lw_antes, A))
+  # D = list(map(lambda x: (x - lw_depois) * (gt_antes - lw_antes) / (gt_depois - lw_depois) + lw_antes, D))
   return (A, D)
 
 """
@@ -90,14 +99,14 @@ retorna
 def partial_dwt2D(matrix, direction, c, d):
   low, high = [], []
   if direction == 'columns':
-    np.transpose(matrix)
+    matrix = np.transpose(matrix).tolist()
   for component in matrix :
     l, h = single_dwt1D(component, c, d)
     low.append(l)
     high.append(h)
   if direction == 'columns':
-    np.transpose(low)
-    np.transpose(high)
+    low = np.transpose(low).tolist()
+    high = np.transpose(high).tolist()
   return (low, high)
 
 """
@@ -111,9 +120,9 @@ retorna
 def complete_dwt2D(matrix, c, d):
   lowlow, lowhigh, highlow, highhigh = [], [], [], []
 
-  low, high = partial_dwt2D(matrix, 'columns', c, d)
-  lowlow, lowhigh = partial_dwt2D(low, 'lines', c, d)
-  highlow, highhigh = partial_dwt2D(high, 'lines', c, d)
+  low, high = partial_dwt2D(matrix, 'lines', c, d)
+  lowlow, lowhigh = partial_dwt2D(low, 'columns', c, d)
+  highlow, highhigh = partial_dwt2D(high, 'columns', c, d)
 
   return [lowlow, lowhigh, highlow, highhigh]
   
@@ -130,13 +139,14 @@ retorna
 def partial_idwt2D(low, high, direction, f, g):
   A = []
   if direction == 'columns':
-    np.transpose(low)
-    np.transpose(high)
-  for i in range(len(low)) :
+    low = np.transpose(low).tolist()
+    high = np.transpose(high).tolist()
+  r = min(len(low), len(high))
+  for i in range(r) :
     a = single_idwt1D(low[i], high[i], f, g)
     A.append(a)
   if direction == 'columns':
-    np.transpose(A)
+    A = np.transpose(A).tolist()
   return A
   
 """
@@ -151,9 +161,9 @@ def complete_idwt2D(filtered_matrices, f, g):
   A = []
   lowlow, lowhigh, highlow, highhigh = filtered_matrices
 
-  high = partial_idwt2D(highlow, highhigh, 'lines', f, g)
-  low = partial_idwt2D(lowlow, lowhigh, 'lines', f, g)
-  A = partial_idwt2D(low, high, 'columns', f, g)
+  high = partial_idwt2D(highlow, highhigh, 'columns', f, g)
+  low = partial_idwt2D(lowlow, lowhigh, 'columns', f, g)
+  A = partial_idwt2D(low, high, 'lines', f, g)
 
   return A
 
@@ -178,7 +188,8 @@ def dwt2D(matrix, j, c, d):
 
 """
 função DWT 2D de reconstrução em J níveis
-  - Lista tupla de filtrados (LL, LH, HL, HH)[]
+  - matriz filtrada LL
+  - Lista de detalhes (LH, HL, HH)[]
   - J níveis de reconstrução
   - filtro de reconstrução passa-baixa
   - filtro de reconstrução passa-alta
