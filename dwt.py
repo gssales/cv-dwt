@@ -202,3 +202,36 @@ def idwt2D(matrix, details, f, g):
     F = (A, *details.pop())
     A = complete_idwt2D(F, f, g)
   return A
+
+"""
+função que filtra por soft-thrsholding 
+  - matriz
+  - alpha
+returna 
+  - Matriz filtrada
+"""
+def threshold(matrix, alpha):
+  max_value = -1000
+  for l in matrix:
+    for c in l:
+      max_value = max(max_value, abs(c))
+  t = alpha*max_value
+  filtered = []
+  for l in matrix:
+    new_line = []
+    for c in l:
+      value = c * (abs(c) - t)
+      new_line.append( c if value >= 0.0 else 0.0 )
+    filtered.append(new_line)
+  return filtered
+
+def details_thresholding(details2d, alpha):
+  result = []
+  for level in details2d:
+    result_level = []
+    for matrix in level:
+      filtered = threshold(matrix, alpha)
+      result_level.append(filtered)
+    result.append(result_level)
+  return result
+
