@@ -95,7 +95,11 @@ if __name__ == '__main__':
 
   thres_details = details_thresholding(details, alpha)
   plot2 = map_result(filtered, thres_details)
-  cv2.imshow("Threshold", plot2)
+  cv2.imshow(f"Threshold alpha={alpha}", plot2)
+  for i in range(len(plot2)):
+    plot2[i] = list(map(lambda x: x * 255.0 , plot2[i]))
+  cv2.imwrite(f"threshold-{output}", np.asmatrix(plot2))
+  print("Resultado Salvo")
 
   reconstructed = idwt2D(filtered, thres_details, haar_f, haar_g)
   for i in range(len(reconstructed)):
